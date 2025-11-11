@@ -1,14 +1,5 @@
 const Score = ({ score }: { score: number }) => (
-  <div style={{
-    position: "absolute",
-    top: "20px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    fontSize: "40px",
-    fontWeight: "bold",
-    color: "white",
-    textShadow: "2px 2px 2px black"
-  }}>
+  <div className="absolute top-5 left-1/2 -translate-x-1/2 text-5xl font-bold text-white [text-shadow:2px_2px_2px_black]">
     {score}
   </div>
 );

@@ -14,30 +14,46 @@ const useGameLogic = () => {
   });
 
   const [pipes, setPipes] = useState<Pipe[]>([]);
-  const [gameState, setGameState] = useState<GameState>("idle");
+  const [gameState, setGameState] = useState<GameState>("intro");
   const [score, setScore] = useState(0);
 
   const pipeTimer = useRef<number | null>(null);
 
   const GRAVITY = 0.2;
-  const JUMP = -2;
-  const PIPE_WIDTH = 70;
-  const PIPE_GAP = 130;
+  const JUMP = -3;
+  const PIPE_WIDTH = 40;
+  const PIPE_GAP = 150;
   const PIPE_SPEED = 7;
   const PIPE_INTERVAL = 1200;
 
   const handleJump = () => {
-    if (gameState === "idle") setGameState("playing");
+    if (gameState === "intro") {
+      startGame(); // Start game from intro screen
+      return;
+    }
     if (gameState === "playing")
       setBird((prev) => ({ ...prev, velocity: JUMP }));
     if (gameState === "gameover") resetGame();
+  };
+
+  const startGame = () => {
+    setBird({
+      x: 80,
+      y: gameHeight / 2,
+      width: 40,
+      height: 40,
+      velocity: JUMP,
+    }); // Start with a jump
+    setPipes([]);
+    setScore(0);
+    setGameState("playing"); // Go directly to playing
   };
 
   const resetGame = () => {
     setBird({ x: 80, y: gameHeight / 2, width: 40, height: 40, velocity: 0 });
     setPipes([]);
     setScore(0); // ✅ Reset score
-    setGameState("idle");
+    setGameState("intro");
   };
 
   // Main game loop (gravity + pipe movement + scoring)
@@ -106,7 +122,16 @@ const useGameLogic = () => {
     return () => pipeTimer.current && clearInterval(pipeTimer.current);
   }, [gameState, gameWidth, gameHeight]);
 
-  return { bird, pipes, gameState, score, handleJump, gameHeight, gameWidth };
+  return {
+    bird,
+    pipes,
+    gameState,
+    score,
+    handleJump,
+    startGame,
+    gameHeight,
+    gameWidth,
+  };
 };
 
 export default useGameLogic;

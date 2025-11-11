@@ -10,9 +10,11 @@ interface BirdProps {
 const Bird: React.FC<BirdProps> = ({ x, y, size, image }) => {
   return (
     <img
+    
       src={image}
       alt="bird"
       style={{
+        userSelect: "none",
         position: "absolute",
         left: `${x}px`,
         top: `${y}px`,

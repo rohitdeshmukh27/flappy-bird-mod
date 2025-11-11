@@ -13,4 +13,4 @@ export interface Pipe {
   passed?: boolean;
 }
 
-export type GameState = "playing" | "gameover" | "idle";
+export type GameState = "intro" | "playing" | "gameover" | "idle";
