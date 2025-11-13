@@ -16,15 +16,53 @@ const useGameLogic = () => {
   const [pipes, setPipes] = useState<Pipe[]>([]);
   const [gameState, setGameState] = useState<GameState>("intro");
   const [score, setScore] = useState(0);
+  const [playedMilestones, setPlayedMilestones] = useState<Set<number>>(
+    new Set()
+  );
+  const [currentMilestone, setCurrentMilestone] = useState<number | null>(null);
 
   const pipeTimer = useRef<number | null>(null);
+  const gameOverSoundPlayed = useRef(false);
+
+  // Milestone scores that trigger sound effects
+  const MILESTONES = [10, 20, 50, 70, 90, 100, 150];
 
   const GRAVITY = 0.2;
   const JUMP = -3;
   const PIPE_WIDTH = 40;
-  const PIPE_GAP = 150;
+  const PIPE_GAP = 250;
   const PIPE_SPEED = 7;
   const PIPE_INTERVAL = 1200;
+
+  // Function to play milestone celebration sound from MP3 files
+  const playMilestoneSound = (milestone: number) => {
+    try {
+      // Play the corresponding MP3 file based on milestone number
+      // Files should be named: number10.mp3, number20.mp3, etc.
+      const audio = new Audio(`/sounds/number${milestone}.mp3`);
+      audio.volume = 0.5; // Adjust volume as needed (0.0 to 1.0)
+      audio.play().catch((error) => {
+        console.warn(`Could not play sound for milestone ${milestone}:`, error);
+      });
+    } catch (error) {
+      console.warn(`Error loading sound for milestone ${milestone}:`, error);
+    }
+  };
+
+  // Function to play random game over sound
+  const playGameOverSound = () => {
+    try {
+      // Randomly select one of the three game over sounds (1, 2, or 3)
+      const randomSound = Math.floor(Math.random() * 3) + 1;
+      const audio = new Audio(`/sounds/gameover${randomSound}.mp3`);
+      audio.volume = 0.6; // Adjust volume as needed
+      audio.play().catch((error) => {
+        console.warn(`Could not play game over sound ${randomSound}:`, error);
+      });
+    } catch (error) {
+      console.warn("Error loading game over sound:", error);
+    }
+  };
 
   const handleJump = () => {
     if (gameState === "intro") {
@@ -46,6 +84,7 @@ const useGameLogic = () => {
     }); // Start with a jump
     setPipes([]);
     setScore(0);
+    gameOverSoundPlayed.current = false; // Reset game over sound flag
     setGameState("playing"); // Go directly to playing
   };
 
@@ -53,6 +92,8 @@ const useGameLogic = () => {
     setBird({ x: 80, y: gameHeight / 2, width: 40, height: 40, velocity: 0 });
     setPipes([]);
     setScore(0); // ✅ Reset score
+    setPlayedMilestones(new Set()); // Reset milestone tracking
+    gameOverSoundPlayed.current = false; // Reset game over sound flag
     setGameState("intro");
   };
 
@@ -67,6 +108,10 @@ const useGameLogic = () => {
         const newVelocity = prev.velocity + GRAVITY;
 
         if (newY + prev.height >= gameHeight || newY <= 0) {
+          if (!gameOverSoundPlayed.current) {
+            playGameOverSound(); // Play random game over sound only once
+            gameOverSoundPlayed.current = true;
+          }
           setGameState("gameover");
           return prev;
         }
@@ -85,7 +130,25 @@ const useGameLogic = () => {
       pipes.forEach((pipe) => {
         if (!pipe.passed && bird.x > pipe.x + PIPE_WIDTH) {
           pipe.passed = true;
-          setScore((prev) => prev + 1);
+          setScore((prev) => {
+            const newScore = prev + 1;
+            // Check if we hit a milestone
+            if (
+              MILESTONES.includes(newScore) &&
+              !playedMilestones.has(newScore)
+            ) {
+              playMilestoneSound(newScore);
+              setCurrentMilestone(newScore);
+              // Hide milestone popup after 2 seconds
+              setTimeout(() => setCurrentMilestone(null), 2000);
+              setPlayedMilestones((prevMilestones) => {
+                const updated = new Set(prevMilestones);
+                updated.add(newScore);
+                return updated;
+              });
+            }
+            return newScore;
+          });
         }
       });
 
@@ -98,6 +161,10 @@ const useGameLogic = () => {
         const hitBottom = birdBottom > gameHeight - pipe.bottomHeight;
 
         if (inPipeX && (hitTop || hitBottom)) {
+          if (!gameOverSoundPlayed.current) {
+            playGameOverSound(); // Play random game over sound only once
+            gameOverSoundPlayed.current = true;
+          }
           setGameState("gameover");
         }
       });
@@ -119,7 +186,9 @@ const useGameLogic = () => {
       ]);
     }, PIPE_INTERVAL);
 
-    return () => pipeTimer.current && clearInterval(pipeTimer.current);
+    return () => {
+      if (pipeTimer.current) clearInterval(pipeTimer.current);
+    };
   }, [gameState, gameWidth, gameHeight]);
 
   return {
@@ -131,6 +200,7 @@ const useGameLogic = () => {
     startGame,
     gameHeight,
     gameWidth,
+    currentMilestone,
   };
 };
 

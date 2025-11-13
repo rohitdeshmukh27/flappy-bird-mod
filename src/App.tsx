@@ -2,13 +2,22 @@ import { useEffect } from "react";
 import Bird from "./components/Bird";
 import Pipes from "./components/Pipes";
 import IntroPage from "./components/IntroPage";
+import MilestonePopup from "./components/MilestonePopup";
 import birdImg from "./assets/bird.png";
 import useGameLogic from "./hooks/useGameLogic";
 import Score from "./components/Score";
 
 const App = () => {
-  const { bird, pipes, gameState, score, handleJump, startGame, gameHeight } =
-    useGameLogic();
+  const {
+    bird,
+    pipes,
+    gameState,
+    score,
+    handleJump,
+    startGame,
+    gameHeight,
+    currentMilestone,
+  } = useGameLogic();
 
   // Spacebar key press
   useEffect(() => {
@@ -33,6 +42,7 @@ const App = () => {
         <Bird x={bird.x} y={bird.y} size={bird.width} image={birdImg} />
         <Pipes pipes={pipes} width={60} gameHeight={gameHeight} />
         <Score score={score} />
+        <MilestonePopup milestone={currentMilestone} />
         {gameState === "gameover" && (
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-bold text-red-600">
             Game Over
