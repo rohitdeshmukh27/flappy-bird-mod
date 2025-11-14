@@ -20,9 +20,12 @@ const useGameLogic = () => {
     new Set()
   );
   const [currentMilestone, setCurrentMilestone] = useState<number | null>(null);
+  const [lastScore, setLastScore] = useState(0);
+  const [highestScore, setHighestScore] = useState(0);
 
   const pipeTimer = useRef<number | null>(null);
   const gameOverSoundPlayed = useRef(false);
+  const backgroundMusic = useRef<HTMLAudioElement | null>(null);
 
   // Milestone scores that trigger sound effects
   const MILESTONES = [10, 20, 50, 70, 90, 100, 150];
@@ -55,7 +58,7 @@ const useGameLogic = () => {
       // Randomly select one of the three game over sounds (1, 2, or 3)
       const randomSound = Math.floor(Math.random() * 3) + 1;
       const audio = new Audio(`/sounds/gameover${randomSound}.mp3`);
-      audio.volume = 0.6; // Adjust volume as needed
+      audio.volume = 0.2; // Adjust volume as needed
       audio.play().catch((error) => {
         console.warn(`Could not play game over sound ${randomSound}:`, error);
       });
@@ -85,15 +88,40 @@ const useGameLogic = () => {
     setPipes([]);
     setScore(0);
     gameOverSoundPlayed.current = false; // Reset game over sound flag
+
+    // Start background music
+    if (backgroundMusic.current) {
+      backgroundMusic.current.play().catch((error) => {
+        console.warn("Could not play background music:", error);
+      });
+    }
+
     setGameState("playing"); // Go directly to playing
   };
 
   const resetGame = () => {
+    // Save last score
+    setLastScore(score);
+    localStorage.setItem("flappyBirdLastScore", score.toString());
+    
+    // Update highest score if current score is higher
+    if (score > highestScore) {
+      setHighestScore(score);
+      localStorage.setItem("flappyBirdHighestScore", score.toString());
+    }
+
     setBird({ x: 80, y: gameHeight / 2, width: 40, height: 40, velocity: 0 });
     setPipes([]);
     setScore(0); // ✅ Reset score
     setPlayedMilestones(new Set()); // Reset milestone tracking
     gameOverSoundPlayed.current = false; // Reset game over sound flag
+
+    // Pause background music
+    if (backgroundMusic.current) {
+      backgroundMusic.current.pause();
+      backgroundMusic.current.currentTime = 0;
+    }
+
     setGameState("intro");
   };
 
@@ -109,6 +137,10 @@ const useGameLogic = () => {
 
         if (newY + prev.height >= gameHeight || newY <= 0) {
           if (!gameOverSoundPlayed.current) {
+            // Stop background music immediately
+            if (backgroundMusic.current) {
+              backgroundMusic.current.pause();
+            }
             playGameOverSound(); // Play random game over sound only once
             gameOverSoundPlayed.current = true;
           }
@@ -162,6 +194,10 @@ const useGameLogic = () => {
 
         if (inPipeX && (hitTop || hitBottom)) {
           if (!gameOverSoundPlayed.current) {
+            // Stop background music immediately
+            if (backgroundMusic.current) {
+              backgroundMusic.current.pause();
+            }
             playGameOverSound(); // Play random game over sound only once
             gameOverSoundPlayed.current = true;
           }
@@ -191,6 +227,29 @@ const useGameLogic = () => {
     };
   }, [gameState, gameWidth, gameHeight]);
 
+  // Initialize background music and load scores from localStorage on mount
+  useEffect(() => {
+    const audio = new Audio("/sounds/background-music.mp3");
+    audio.loop = true; // Loop the music
+    audio.volume = 0.3; // Set volume to 30%
+    backgroundMusic.current = audio;
+
+    // Load scores from localStorage
+    const savedLastScore = localStorage.getItem("flappyBirdLastScore");
+    const savedHighestScore = localStorage.getItem("flappyBirdHighestScore");
+    
+    if (savedLastScore) setLastScore(parseInt(savedLastScore, 10));
+    if (savedHighestScore) setHighestScore(parseInt(savedHighestScore, 10));
+
+    return () => {
+      // Cleanup: stop music when component unmounts
+      if (backgroundMusic.current) {
+        backgroundMusic.current.pause();
+        backgroundMusic.current = null;
+      }
+    };
+  }, []);
+
   return {
     bird,
     pipes,
@@ -201,6 +260,8 @@ const useGameLogic = () => {
     gameHeight,
     gameWidth,
     currentMilestone,
+    lastScore,
+    highestScore,
   };
 };
 

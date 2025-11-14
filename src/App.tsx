@@ -17,6 +17,8 @@ const App = () => {
     startGame,
     gameHeight,
     currentMilestone,
+    lastScore,
+    highestScore,
   } = useGameLogic();
 
   // Spacebar key press
@@ -33,9 +35,21 @@ const App = () => {
 
   return (
     <>
-      {gameState === "intro" && <IntroPage onStart={startGame} />}
+      {gameState === "intro" && (
+        <IntroPage
+          onStart={startGame}
+          lastScore={lastScore}
+          highestScore={highestScore}
+        />
+      )}
       <div
         className="fixed inset-0 w-screen h-screen overflow-hidden bg-sky-400 z-0"
+        style={{
+          backgroundImage: "url('/images/background.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
         onMouseDown={gameState !== "intro" ? handleJump : undefined}
         onTouchStart={gameState !== "intro" ? handleJump : undefined}
       >
