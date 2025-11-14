@@ -36,85 +36,79 @@ const IntroPage: React.FC<IntroPageProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[1001] overflow-hidden">
-      <div className="text-center p-8 md:p-12 mx-4 max-w-[650px] w-[90%] animate-fadeInUp">
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-8 drop-shadow-[2px_2px_4px_rgba(0,0,0,0.1)]">
-          Flappy Bird
-        </h1>
+    <div className="fixed inset-0 flex items-center justify-center z-50 overflow-hidden">
+      {/* Subtle dark overlay */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
-        {/* Score Display */}
-        <div className="mb-6 flex justify-center gap-4 flex-wrap">
-          {lastScore > 0 && (
-            <div className="bg-gradient-to-b from-blue-400 to-blue-600 text-white px-4 py-2 rounded-lg shadow-lg">
-              <p className="text-xs font-semibold uppercase tracking-wide opacity-90">
-                Last Score
+      {/* Frosted glass panel */}
+      <div className="relative z-10 w-[92%] max-w-2xl mx-auto p-6 md:p-10 rounded-3xl bg-white/6 border border-white/10 backdrop-blur-lg shadow-2xl">
+        <div className="flex flex-col items-center text-center gap-6">
+          <div className="flex items-center gap-3">
+            
+            <h1 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">
+              Flappy Bird
+            </h1>
+          </div>
+
+          {/* Score cards */}
+          <div className="flex gap-4 flex-wrap justify-center w-full">
+            <div className="min-w-[120px] px-4 py-3 rounded-xl bg-white/8 border border-white/8 backdrop-blur-sm text-center">
+              <p className="text-xs text-white/80 uppercase">Last Score</p>
+              <p className="text-xl md:text-2xl font-bold text-white">
+                {lastScore}
               </p>
-              <p className="text-2xl font-bold">{lastScore}</p>
             </div>
-          )}
-          {highestScore > 0 && (
-            <div className="bg-gradient-to-b from-yellow-400 to-yellow-600 text-gray-800 px-4 py-2 rounded-lg shadow-lg">
-              <p className="text-xs font-semibold uppercase tracking-wide opacity-90">
-                Highest Score
+            <div className="min-w-[120px] px-4 py-3 rounded-xl bg-white/8 border border-white/8 backdrop-blur-sm text-center">
+              <p className="text-xs text-white/80 uppercase">Best</p>
+              <p className="text-xl md:text-2xl font-bold text-white">
+                {highestScore}
               </p>
-              <p className="text-2xl font-bold">{highestScore}</p>
             </div>
-          )}
-        </div>
+          </div>
 
-        <button
-          className="bg-gradient-to-b from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white border-none px-8 md:px-10 py-3 md:py-4 text-lg md:text-xl font-bold rounded-lg cursor-pointer transition-all duration-200 shadow-[0_6px_0_0_#15803d,0_8px_15px_rgba(0,0,0,0.3)] hover:shadow-[0_4px_0_0_#15803d,0_6px_12px_rgba(0,0,0,0.3)] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_2px_0_0_#15803d,0_3px_8px_rgba(0,0,0,0.3)] mb-6 uppercase tracking-wide w-full md:w-auto"
-          onClick={onStart}
-        >
-          START GAME
-        </button>
+          {/* Primary action */}
+          <button
+            onClick={onStart}
+            className="mt-2 w-full md:w-auto px-6 py-3 rounded-xl bg-white/10 border border-white/12 text-white font-semibold hover:bg-white/14 transition"
+          >
+            Start Game
+          </button>
 
-        <div className="flex flex-row gap-2 mb-6 justify-center flex-wrap">
-          <button
-            className="bg-gradient-to-b from-yellow-300 to-yellow-500 hover:from-yellow-400 hover:to-yellow-600 text-gray-800 border-none px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm rounded-md cursor-pointer transition-all duration-200 font-medium shadow-[0_4px_0_0_#b45309,0_6px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_0_0_#b45309,0_4px_8px_rgba(0,0,0,0.25)] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#b45309,0_2px_5px_rgba(0,0,0,0.25)] whitespace-nowrap flex items-center justify-center gap-1.5"
-            onClick={handleBuyMeACoffee}
-          >
-            <img
-              src="https://em-content.zobj.net/source/apple/419/beer-mug_1f37a.png"
-              alt="coffee"
-              className="w-4 h-4 md:w-5 md:h-5 object-contain"
-            />
-            <span>Buy Me a Coffee</span>
-          </button>
-          <button
-            className="bg-gradient-to-b from-red-400 to-red-600 hover:from-red-500 hover:to-red-700 text-white border-none px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm rounded-md cursor-pointer transition-all duration-200 font-medium shadow-[0_4px_0_0_#991b1b,0_6px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_0_0_#991b1b,0_4px_8px_rgba(0,0,0,0.25)] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#991b1b,0_2px_5px_rgba(0,0,0,0.25)] whitespace-nowrap flex items-center justify-center gap-1.5"
-            onClick={handleReportBug}
-          >
-            <img
-              src="https://em-content.zobj.net/source/apple/419/bug_1f41b.png"
-              alt="bug"
-              className="w-4 h-4 md:w-5 md:h-5 object-contain"
-            />
-            <span>Report Bug</span>
-          </button>
-          <button
-            className="bg-gradient-to-b from-teal-400 to-teal-600 hover:from-teal-500 hover:to-teal-700 text-white border-none px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm rounded-md cursor-pointer transition-all duration-200 font-medium shadow-[0_4px_0_0_#0f766e,0_6px_10px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_0_0_#0f766e,0_4px_8px_rgba(0,0,0,0.25)] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_1px_0_0_#0f766e,0_2px_5px_rgba(0,0,0,0.25)] whitespace-nowrap flex items-center justify-center gap-1.5"
-            onClick={handleSuggest}
-          >
-            <img
-              src="https://em-content.zobj.net/source/apple/419/pencil_270f-fe0f.png"
-              alt="pencil"
-              className="w-4 h-4 md:w-5 md:h-5 object-contain"
-            />
-            <span>Suggest Something</span>
-          </button>
-        </div>
+          {/* Small action links */}
+          <div className="flex gap-3 flex-wrap justify-center mt-2">
+            <button
+              onClick={handleBuyMeACoffee}
+              className="text-sm text-white/80 px-3 py-2 rounded-lg border border-white/6 hover:bg-white/3 transition"
+            >
+              Buy Me a Coffee
+            </button>
+            <button
+              onClick={handleReportBug}
+              className="text-sm text-white/80 px-3 py-2 rounded-lg border border-white/6 hover:bg-white/3 transition"
+            >
+              Report Bug
+            </button>
+            <button
+              onClick={handleSuggest}
+              className="text-sm text-white/80 px-3 py-2 rounded-lg border border-white/6 hover:bg-white/3 transition"
+            >
+              Suggest
+            </button>
+          </div>
 
-        <div className="mt-4 p-3 bg-white rounded-lg text-gray-600">
-          <p className="my-1 text-xs md:text-sm font-bold">Controls:</p>
-          <p className="my-1 text-xs md:text-sm">
-            • Press{" "}
-            <kbd className="bg-gray-800 text-white px-2 py-1 rounded font-mono font-bold text-xs">
-              SPACE
-            </kbd>{" "}
-            or click/tap to jump
-          </p>
-          <p className="my-1 text-xs md:text-sm">• Avoid the pipes!</p>
+          {/* Controls */}
+          <div className="mt-4 text-sm text-white/70 w-full">
+            <div className="mx-auto max-w-[420px] bg-white/3 p-3 rounded-lg text-center">
+              <p className="font-medium">Controls</p>
+              <p className="mt-1">
+                Press{" "}
+                <kbd className="bg-black/70 text-white px-2 py-1 rounded">
+                  SPACE
+                </kbd>{" "}
+                or click/tap to jump
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
