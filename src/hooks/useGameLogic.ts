@@ -26,6 +26,7 @@ const useGameLogic = () => {
   const pipeTimer = useRef<number | null>(null);
   const gameOverSoundPlayed = useRef(false);
   const backgroundMusic = useRef<HTMLAudioElement | null>(null);
+  const milestoneVideoRef = useRef<HTMLVideoElement | null>(null);
 
   // Milestone scores that trigger sound effects
   const MILESTONES = [10, 20, 50, 70, 90, 100, 150];
@@ -37,18 +38,48 @@ const useGameLogic = () => {
   const PIPE_SPEED = 7;
   const PIPE_INTERVAL = 1200;
 
-  // Function to play milestone celebration sound from MP3 files
+  // Function to play milestone celebration video/sound
   const playMilestoneSound = (milestone: number) => {
     try {
-      // Play the corresponding MP3 file based on milestone number
-      // Files should be named: number10.mp3, number20.mp3, etc.
-      const audio = new Audio(`/sounds/number${milestone}.mp3`);
-      audio.volume = 0.5; // Adjust volume as needed (0.0 to 1.0)
-      audio.play().catch((error) => {
-        console.warn(`Could not play sound for milestone ${milestone}:`, error);
+      // Remove any existing video
+      if (milestoneVideoRef.current) {
+        document.body.removeChild(milestoneVideoRef.current);
+        milestoneVideoRef.current = null;
+      }
+
+      // Create and style the video element
+      const video = document.createElement("video");
+      video.src = `/sounds/number${milestone}.mp4`;
+      video.volume = 0.5;
+      video.autoplay = true;
+      video.style.opacity = "0.5";
+      // Style the video to appear centered on screen
+      video.style.position = "fixed";
+      video.style.top = "20%";
+      video.style.left = "50%";
+      video.style.transform = "translate(-50%, -50%)";
+      video.style.width = "420px";
+      video.style.maxWidth = "90vw";
+      video.style.height = "auto";
+      video.style.zIndex = "9999";
+      video.style.boxShadow = "0 8px 32px rgba(0, 0, 0, 0.5)";
+
+      document.body.appendChild(video);
+      milestoneVideoRef.current = video;
+
+      video.play().catch((error) => {
+        console.warn(`Could not play video for milestone ${milestone}:`, error);
       });
+
+      // Remove video element after it finishes playing
+      video.onended = () => {
+        if (milestoneVideoRef.current) {
+          document.body.removeChild(milestoneVideoRef.current);
+          milestoneVideoRef.current = null;
+        }
+      };
     } catch (error) {
-      console.warn(`Error loading sound for milestone ${milestone}:`, error);
+      console.warn(`Error loading video for milestone ${milestone}:`, error);
     }
   };
 
@@ -67,13 +98,28 @@ const useGameLogic = () => {
     }
   };
 
+  // Function to play jump sound
+  const playJumpSound = () => {
+    try {
+      const audio = new Audio("/sounds/jump.mp3");
+      audio.volume = 0.4; // Adjust volume as needed
+      audio.play().catch((error) => {
+        console.warn("Could not play jump sound:", error);
+      });
+    } catch (error) {
+      console.warn("Error loading jump sound:", error);
+    }
+  };
+
   const handleJump = () => {
     if (gameState === "intro") {
       startGame(); // Start game from intro screen
       return;
     }
-    if (gameState === "playing")
+    if (gameState === "playing") {
+      playJumpSound(); // Play jump sound
       setBird((prev) => ({ ...prev, velocity: JUMP }));
+    }
     if (gameState === "gameover") resetGame();
   };
 
@@ -103,7 +149,7 @@ const useGameLogic = () => {
     // Save last score
     setLastScore(score);
     localStorage.setItem("flappyBirdLastScore", score.toString());
-    
+
     // Update highest score if current score is higher
     if (score > highestScore) {
       setHighestScore(score);
@@ -124,6 +170,11 @@ const useGameLogic = () => {
 
     setGameState("intro");
   };
+
+  localStorage.setItem(
+    "for the developers who came to see whats under application",
+    "BKL"
+  );
 
   // Main game loop (gravity + pipe movement + scoring)
   useEffect(() => {
@@ -237,7 +288,7 @@ const useGameLogic = () => {
     // Load scores from localStorage
     const savedLastScore = localStorage.getItem("flappyBirdLastScore");
     const savedHighestScore = localStorage.getItem("flappyBirdHighestScore");
-    
+
     if (savedLastScore) setLastScore(parseInt(savedLastScore, 10));
     if (savedHighestScore) setHighestScore(parseInt(savedHighestScore, 10));
 

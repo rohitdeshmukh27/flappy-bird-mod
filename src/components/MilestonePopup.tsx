@@ -17,31 +17,44 @@ const MilestonePopup = ({ milestone }: MilestonePopupProps) => {
 
   if (!visible || !milestone) return null;
 
-  // Different colors for different milestones
-  const getColor = () => {
-    if (milestone >= 100) return "from-yellow-400 to-orange-500";
-    if (milestone >= 50) return "from-purple-400 to-pink-500";
-    return "from-blue-400 to-cyan-500";
+  // Custom messages for each milestone
+  const getMessage = () => {
+    switch (milestone) {
+      case 10:
+        return "Less go 🧒🏿";
+      case 20:
+        return "Dont look here 🧒🏿";
+      case 50:
+        return "Half century Daddy";
+      case 70:
+        return "Lock In 🧒🏿";
+      case 90:
+        return "Legendary 🧒🏿";
+      case 100:
+        return "Extraordinary 🧒🏿";
+      case 150:
+        return "ABSOLUTE BEAST 🧒🏿";
+      default:
+        return "🧒🏿...I haven't coded further milestones";
+    }
   };
 
   const getSize = () => {
-    if (milestone >= 100) return "text-6xl";
-    if (milestone >= 50) return "text-5xl";
-    return "text-4xl";
+    if (milestone >= 100) return "text-5xl md:text-6xl";
+    if (milestone >= 50) return "text-4xl md:text-5xl";
+    return "text-3xl md:text-4xl";
   };
 
   return (
-    <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-50">
+    <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-50 px-4">
       <div
         className={`
-          ${getSize()} font-black 
-          bg-gradient-to-r ${getColor()} 
-          bg-clip-text text-transparent
-          animate-bounce
-          drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]
+          ${getSize()} font-bold 
+          text-white/50
+          
         `}
       >
-        🎉 {milestone} POINTS! 🎉
+        {getMessage()}
       </div>
     </div>
   );

@@ -2,19 +2,28 @@
 
 ## Sound Files
 
-Place your MP3 sound files in this folder with the following naming convention:
+Place your audio and video files in this folder with the following naming convention:
 
-### Milestone Sound Files:
+### Jump Sound (MP3):
 
-- `number10.mp3` - Plays when player reaches 10 points
-- `number20.mp3` - Plays when player reaches 20 points
-- `number50.mp3` - Plays when player reaches 50 points
-- `number70.mp3` - Plays when player reaches 70 points
-- `number90.mp3` - Plays when player reaches 90 points
-- `number100.mp3` - Plays when player reaches 100 points
-- `number150.mp3` - Plays when player reaches 150 points
+- `jump.mp3` - Plays when player presses space or clicks to jump (~1 second duration recommended)
+  - Volume set to 40% (0.4)
 
-### Game Over Sound Files:
+### Milestone Video Files (MP4):
+
+These will play video with audio for milestone celebrations:
+
+- `number10.mp4` - Plays when player reaches 10 points (420px recommended)
+- `number20.mp4` - Plays when player reaches 20 points (420px recommended)
+- `number50.mp4` - Plays when player reaches 50 points (420px recommended)
+- `number70.mp4` - Plays when player reaches 70 points (420px recommended)
+- `number90.mp4` - Plays when player reaches 90 points (420px recommended)
+- `number100.mp4` - Plays when player reaches 100 points (420px recommended)
+- `number150.mp4` - Plays when player reaches 150 points (420px recommended)
+
+**Note:** Videos are played invisibly (audio only) for optimal performance. Recommended resolution: 420px for best optimization.
+
+### Game Over Sound Files (MP3):
 
 The game will randomly play one of these three sounds when the player crashes:
 
@@ -22,7 +31,7 @@ The game will randomly play one of these three sounds when the player crashes:
 - `gameover2.mp3` - Second game over sound
 - `gameover3.mp3` - Third game over sound
 
-### Background Music:
+### Background Music (MP3):
 
 - `background-music.mp3` - Loops continuously during gameplay
   - Starts when the game begins
@@ -39,11 +48,12 @@ Place your background image in the `/public/images/` folder:
 
 ## Notes:
 
-- All sound files should be in MP3 format
-- Background image can be .jpg, .png, or other image formats (update filename in code if needed)
+- Milestone files should be in **MP4 format** (video with audio)
+- Game over and background music should be in **MP3 format**
+- Background image can be .jpg, .png, or other image formats
 - File names are case-sensitive
 - The game will continue to work even if some files are missing (warnings will appear in console)
 - Volume levels:
-  - Milestone sounds: 50% (0.5)
-  - Game over sounds: 60% (0.6)
+  - Milestone videos: 50% (0.5)
+  - Game over sounds: 20% (0.2)
   - Background music: 30% (0.3) - loops continuously
