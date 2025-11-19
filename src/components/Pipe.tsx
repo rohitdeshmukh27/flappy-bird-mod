@@ -18,7 +18,7 @@ const Pipe: React.FC<PipeProps> = ({ x, topHeight, bottomHeight, width, gameHeig
           top: "0px",
           width: `${width}px`,
           height: `${topHeight}px`,
-          backgroundColor: "green",
+          backgroundColor: "grey",
         }}
       />
       <div
@@ -28,7 +28,7 @@ const Pipe: React.FC<PipeProps> = ({ x, topHeight, bottomHeight, width, gameHeig
           bottom: "0px",
           width: `${width}px`,
           height: `${bottomHeight}px`,
-          backgroundColor: "green",
+          backgroundColor: "grey",
         }}
       />
     </>

@@ -40,9 +40,9 @@ const MilestonePopup = ({ milestone }: MilestonePopupProps) => {
   };
 
   const getSize = () => {
-    if (milestone >= 100) return "text-5xl md:text-6xl";
-    if (milestone >= 50) return "text-4xl md:text-5xl";
-    return "text-3xl md:text-4xl";
+    if (milestone >= 100) return "text-3xl sm:text-4xl md:text-5xl lg:text-6xl";
+    if (milestone >= 50) return "text-2xl sm:text-3xl md:text-4xl lg:text-5xl";
+    return "text-xl sm:text-2xl md:text-3xl lg:text-4xl";
   };
 
   return (
@@ -51,7 +51,8 @@ const MilestonePopup = ({ milestone }: MilestonePopupProps) => {
         className={`
           ${getSize()} font-bold 
           text-white/50
-          
+          text-center leading-tight
+          max-w-[90vw]
         `}
       >
         {getMessage()}

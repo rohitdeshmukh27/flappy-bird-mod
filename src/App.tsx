@@ -16,6 +16,7 @@ const App = () => {
     handleJump,
     startGame,
     gameHeight,
+    gameWidth,
     currentMilestone,
     lastScore,
     highestScore,
@@ -33,6 +34,24 @@ const App = () => {
     return () => window.removeEventListener("keyup", handleKeyUp);
   }, [handleJump, gameState]);
 
+  // Touch event handler with passive: false to allow preventDefault
+  useEffect(() => {
+    const handleTouchStart = (e: TouchEvent) => {
+      if (gameState !== "intro") {
+        e.preventDefault();
+        handleJump();
+      }
+    };
+
+    const gameArea = document.getElementById("game-area");
+    if (gameArea) {
+      gameArea.addEventListener("touchstart", handleTouchStart, {
+        passive: false,
+      });
+      return () => gameArea.removeEventListener("touchstart", handleTouchStart);
+    }
+  }, [handleJump, gameState]);
+
   return (
     <>
       {gameState === "intro" && (
@@ -43,6 +62,7 @@ const App = () => {
         />
       )}
       <div
+        id="game-area"
         className="fixed inset-0 w-screen h-screen overflow-hidden bg-sky-400 z-0"
         style={{
           backgroundImage: "url('/images/background.jpg')",
@@ -51,17 +71,25 @@ const App = () => {
           backgroundRepeat: "no-repeat",
         }}
         onMouseDown={gameState !== "intro" ? handleJump : undefined}
-        onTouchStart={gameState !== "intro" ? handleJump : undefined}
       >
         <Bird x={bird.x} y={bird.y} size={bird.width} image={birdImg} />
-        <Pipes pipes={pipes} width={60} gameHeight={gameHeight} />
+        <Pipes
+          pipes={pipes}
+          width={gameWidth < 640 ? 50 : 60}
+          gameHeight={gameHeight}
+        />
         <Score score={score} />
         <MilestonePopup milestone={currentMilestone} />
         {gameState === "gameover" && (
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-bold text-white">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl sm:text-4xl md:text-5xl font-bold text-white text-center px-4">
             Try again 🧒🏿
           </div>
         )}
+
+        {/* Disclaimer */}
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-white/60 text-xs text-center px-4">
+          For fun and entertainment purposes only
+        </div>
       </div>
     </>
   );

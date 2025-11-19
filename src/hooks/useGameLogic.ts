@@ -22,20 +22,22 @@ const useGameLogic = () => {
   const [currentMilestone, setCurrentMilestone] = useState<number | null>(null);
   const [lastScore, setLastScore] = useState(0);
   const [highestScore, setHighestScore] = useState(0);
+  const [lastPipeHeight, setLastPipeHeight] = useState<number | null>(null);
 
   const pipeTimer = useRef<number | null>(null);
   const gameOverSoundPlayed = useRef(false);
   const backgroundMusic = useRef<HTMLAudioElement | null>(null);
   const milestoneVideoRef = useRef<HTMLVideoElement | null>(null);
+  const lastJumpTime = useRef<number>(0);
 
   // Milestone scores that trigger sound effects
   const MILESTONES = [10, 20, 50, 70, 90, 100, 150];
 
   const GRAVITY = 0.2;
   const JUMP = -3;
-  const PIPE_WIDTH = 40;
-  const PIPE_GAP = 250;
-  const PIPE_SPEED = 7;
+  const PIPE_WIDTH = gameWidth < 640 ? 50 : 60;
+  const PIPE_GAP = gameWidth < 640 ? 200 : 250;
+  const PIPE_SPEED = gameWidth < 640 ? 5 : 7;
   const PIPE_INTERVAL = 1200;
 
   // Function to play milestone celebration video/sound
@@ -112,6 +114,13 @@ const useGameLogic = () => {
   };
 
   const handleJump = () => {
+    const now = Date.now();
+    // Debounce: Prevent jumps within 150ms of each other
+    if (now - lastJumpTime.current < 150) {
+      return;
+    }
+    lastJumpTime.current = now;
+
     if (gameState === "intro") {
       startGame(); // Start game from intro screen
       return;
@@ -133,6 +142,7 @@ const useGameLogic = () => {
     }); // Start with a jump
     setPipes([]);
     setScore(0);
+    setLastPipeHeight(null); // Reset pipe height tracking
     gameOverSoundPlayed.current = false; // Reset game over sound flag
 
     // Start background music
@@ -159,6 +169,7 @@ const useGameLogic = () => {
     setBird({ x: 80, y: gameHeight / 2, width: 40, height: 40, velocity: 0 });
     setPipes([]);
     setScore(0); // ✅ Reset score
+    setLastPipeHeight(null); // Reset pipe height tracking
     setPlayedMilestones(new Set()); // Reset milestone tracking
     gameOverSoundPlayed.current = false; // Reset game over sound flag
 
@@ -265,7 +276,28 @@ const useGameLogic = () => {
     if (gameState !== "playing") return;
 
     pipeTimer.current = window.setInterval(() => {
-      const topHeight = Math.random() * (gameHeight - PIPE_GAP - 100) + 50;
+      let topHeight: number;
+
+      if (gameWidth < 640) {
+        // Mobile: smoother transitions between pipes
+        if (lastPipeHeight === null) {
+          // First pipe: center it nicely
+          topHeight = gameHeight * 0.3 + Math.random() * gameHeight * 0.2;
+        } else {
+          // Subsequent pipes: limit height change to 30% of screen
+          const maxChange = gameHeight * 0.3;
+          const change = (Math.random() - 0.5) * maxChange;
+          topHeight = Math.max(
+            gameHeight * 0.15,
+            Math.min(gameHeight * 0.65, lastPipeHeight + change)
+          );
+        }
+      } else {
+        // Desktop: original random generation
+        topHeight = Math.random() * (gameHeight - PIPE_GAP - 100) + 50;
+      }
+
+      setLastPipeHeight(topHeight);
       const bottomHeight = gameHeight - topHeight - PIPE_GAP;
       setPipes((prev) => [
         ...prev,
