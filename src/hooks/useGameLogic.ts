@@ -2,8 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import type { Bird, Pipe, GameState } from "../types/game";
 
 const useGameLogic = () => {
-  const [gameWidth, setGameWidth] = useState(window.innerWidth);
-  const [gameHeight, setGameHeight] = useState(window.innerHeight);
+  const [gameWidth] = useState(window.innerWidth);
+  const [gameHeight] = useState(window.innerHeight);
 
   const [bird, setBird] = useState<Bird>({
     x: 80,
