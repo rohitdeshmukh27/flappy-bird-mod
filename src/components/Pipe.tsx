@@ -8,7 +8,7 @@ interface PipeProps {
   gameHeight: number;
 }
 
-const Pipe: React.FC<PipeProps> = ({ x, topHeight, bottomHeight, width, gameHeight }) => {
+const Pipe: React.FC<PipeProps> = ({ x, topHeight, bottomHeight, width }) => {
   return (
     <>
       <div

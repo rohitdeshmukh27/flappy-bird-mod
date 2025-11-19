@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import Bird from "./components/Bird";
 import Pipes from "./components/Pipes";
 import IntroPage from "./components/IntroPage";
@@ -6,6 +6,13 @@ import MilestonePopup from "./components/MilestonePopup";
 import birdImg from "./assets/bird.png";
 import useGameLogic from "./hooks/useGameLogic";
 import Score from "./components/Score";
+import {
+  initGA,
+  trackGameStart,
+  trackGameEnd,
+  trackMilestone,
+  trackHighScore,
+} from "./utils/analytics";
 
 const App = () => {
   const {
@@ -21,6 +28,52 @@ const App = () => {
     lastScore,
     highestScore,
   } = useGameLogic();
+
+  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
+  const [trackedMilestones, setTrackedMilestones] = useState<Set<number>>(
+    new Set()
+  );
+  const previousHighScore = useRef<number>(highestScore);
+
+  // Initialize Google Analytics on mount
+  useEffect(() => {
+    initGA();
+  }, []);
+
+  // Track game session start
+  useEffect(() => {
+    if (gameState === "playing" && sessionStartTime === null) {
+      const startTime = Date.now();
+      setSessionStartTime(startTime);
+      trackGameStart();
+    }
+  }, [gameState, sessionStartTime]);
+
+  // Track game session end and duration
+  useEffect(() => {
+    if (gameState === "gameover" && sessionStartTime !== null) {
+      const duration = (Date.now() - sessionStartTime) / 1000; // Convert to seconds
+      trackGameEnd(score, duration);
+      setSessionStartTime(null);
+      setTrackedMilestones(new Set()); // Reset milestones for next game
+    }
+  }, [gameState, sessionStartTime, score]);
+
+  // Track milestones
+  useEffect(() => {
+    if (currentMilestone && !trackedMilestones.has(currentMilestone)) {
+      trackMilestone(currentMilestone);
+      setTrackedMilestones((prev) => new Set(prev).add(currentMilestone));
+    }
+  }, [currentMilestone, trackedMilestones]);
+
+  // Track new high score
+  useEffect(() => {
+    if (highestScore > previousHighScore.current) {
+      trackHighScore(highestScore);
+      previousHighScore.current = highestScore;
+    }
+  }, [highestScore]);
 
   // Spacebar key press
   useEffect(() => {
